@@ -1,0 +1,142 @@
+---
+router:
+  metrics:
+    - heroku_name: connect
+      datadog_name: heroku.router.connect
+      enabled: true
+      type: float
+      metric: histogram
+    - heroku_name: service
+      datadog_name: heroku.router.service
+      enabled: true
+      type: float
+      metric: histogram
+  tags:
+    - dyno
+    - method
+    - host
+    - path
+    - status
+
+dyno:
+  metrics:
+    - heroku_name: "sample#memory_cache"
+      datadog_name: heroku.dyno.memory_cache
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory_quota"
+      datadog_name: heroku.dyno.memory_quota
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory_rss"
+      datadog_name: heroku.dyno.memory_rss
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory_swap"
+      datadog_name: heroku.dyno.memory_swap
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory_total"
+      datadog_name: heroku.dyno.memory_total
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load_avg_1m"
+      datadog_name: heroku.dyno.load_avg_1m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load_avg_5m"
+      datadog_name: heroku.dyno.load_avg_5m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load_avg_15m"
+      datadog_name: heroku.dyno.load_avg_15m
+      enabled: true
+      type: float
+      metric: gauge
+  tags:
+    - source
+
+postgres:
+  metrics:
+    - heroku_name: "sample#db_size"
+      datadog_name: heroku.postgres.db_size
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#tables"
+      datadog_name: heroku.postgres.tables
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#active-connections"
+      datadog_name: heroku.postgres.active_connections
+      enabled: true
+      type: integer
+      metric: gauge
+    - heroku_name: "sample#waiting-connections"
+      datadog_name: heroku.postgres.waiting_connections
+      enabled: true
+      type: integer
+      metric: gauge
+    - heroku_name: "sample#index-cache-hit-rate"
+      datadog_name: heroku.postgres.index_cache_hit_rate
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#table-cache-hit-rate"
+      datadog_name: heroku.postgres.table_cache_hit_rate
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load-avg-1m"
+      datadog_name: heroku.postgres.load_avg_1m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load-avg-5m"
+      datadog_name: heroku.postgres.load_avg_5m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load-avg-15m"
+      datadog_name: heroku.postgres.load_avg_15m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#read-iops"
+      datadog_name: heroku.postgres.read_iops
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#write-iops"
+      datadog_name: heroku.postgres.write_iops
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-total"
+      datadog_name: heroku.postgres.memory_total
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-free"
+      datadog_name: heroku.postgres.memory_free
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-cached"
+      datadog_name: heroku.postgres.memory_cached
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-postgres"
+      datadog_name: heroku.postgres.memory_postgres
+      enabled: true
+      type: float
+      metric: gauge
