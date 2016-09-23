@@ -1,7 +1,7 @@
 require "spec_helper"
 require "rack/test"
 require "logger"
-require "statsd"
+require "datadog/statsd"
 require "heroku_drain_datadog/configuration"
 require "heroku_drain_datadog/router"
 
@@ -9,7 +9,7 @@ RSpec.describe HerokuDrainDatadog::Router do
   include Rack::Test::Methods
 
   describe "POST /logs" do
-    let(:statsd) { Statsd.new }
+    let(:statsd) { Datadog::Statsd.new }
 
     let(:app) do
       HerokuDrainDatadog::Router.new(

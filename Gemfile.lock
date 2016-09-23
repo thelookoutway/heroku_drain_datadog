@@ -3,7 +3,7 @@ GEM
   specs:
     byebug (9.0.5)
     diff-lcs (1.2.5)
-    dogstatsd-ruby (1.6.0)
+    dogstatsd-ruby (2.0.0)
     puma (3.6.0)
     rack (2.0.1)
     rack-test (0.6.3)

@@ -34,7 +34,7 @@ module HerokuDrainDatadog
           tags = ["drain:#{drain_token}"]
           app_name = ENV["DRAIN_#{drain_token}"]
           if app_name
-            tags << ["app:#{app_name}"]
+            tags << "app:#{app_name}"
           end
           tags
         end
