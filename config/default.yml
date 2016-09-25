@@ -136,7 +136,7 @@ postgres:
     - heroku_name: "sample#tables"
       datadog_name: heroku.postgres.tables
       enabled: true
-      type: float
+      type: integer
       metric: gauge
     - heroku_name: "sample#active-connections"
       datadog_name: heroku.postgres.active_connections

@@ -212,7 +212,7 @@ RSpec.describe HerokuDrainDatadog::Router do
             expect(statsd.buffer[1]).to eq("heroku.postgres.tables:17.0|g|#drain:abc123")
           end
 
-          it "sends a gauge for active connections" do
+          it "sends a gauge for active_connections" do
             expect(statsd.buffer[2]).to eq("heroku.postgres.active_connections:3|g|#drain:abc123")
           end
 
