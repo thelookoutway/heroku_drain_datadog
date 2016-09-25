@@ -63,6 +63,69 @@ dyno:
   tags:
     - source
 
+redis:
+  metrics:
+    - heroku_name: "sample#active-connections"
+      datadog_name: heroku.redis.active_aconnections
+      enabled: true
+      type: integer
+      metric: gauge
+    - heroku_name: "sample#load-avg-1m"
+      datadog_name: heroku.redis.load_avg_1m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load-avg-5m"
+      datadog_name: heroku.redis.load_avg_5m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#load-avg-15m"
+      datadog_name: heroku.redis.load_avg_15m
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#read-iops"
+      datadog_name: heroku.redis.read_iops
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#write-iops"
+      datadog_name: heroku.redis.write_iops
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-total"
+      datadog_name: heroku.redis.memory_total
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-free"
+      datadog_name: heroku.redis.memory_free
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-cached"
+      datadog_name: heroku.redis.memory_cached
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#memory-redis"
+      datadog_name: heroku.redis.memory_redis
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#hit-rate"
+      datadog_name: heroku.redis.hit_rate
+      enabled: true
+      type: float
+      metric: gauge
+    - heroku_name: "sample#evicted-keys"
+      datadog_name: heroku.redis.evicted_keys
+      enabled: true
+      type: integer
+      metric: gauge
+
 postgres:
   metrics:
     - heroku_name: "sample#db_size"

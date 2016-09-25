@@ -133,6 +133,68 @@ RSpec.describe HerokuDrainDatadog::Router do
           end
         end
 
+        context "redis logs" do
+          before do
+            post "/logs", %q{393 <134>1 2016-09-23T07:07:54+00:00 host app heroku-redis - source=REDIS sample#active-connections=27 sample#load-avg-1m=0 sample#load-avg-5m=0.015 sample#load-avg-15m=0.01 sample#read-iops=0 sample#write-iops=0.11282 sample#memory-total=15664876.0kB sample#memory-free=12688956.0kB sample#memory-cached=1762284.0kB sample#memory-redis=1908016bytes sample#hit-rate=0.0096774 sample#evicted-keys=0}
+          end
+
+          it "sends 13 metrics" do
+            expect(statsd.buffer.length).to eq(13)
+          end
+
+          it "sends a gauge for the active_connections" do
+            expect(statsd.buffer[0]).to eq("heroku.redis.active_aconnections:27|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the load_avg_1m" do
+            expect(statsd.buffer[1]).to eq("heroku.redis.load_avg_1m:0.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the load_avg_5m" do
+            expect(statsd.buffer[2]).to eq("heroku.redis.load_avg_5m:0.015|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the load_avg_15m" do
+            expect(statsd.buffer[3]).to eq("heroku.redis.load_avg_15m:0.01|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the read_iops" do
+            expect(statsd.buffer[4]).to eq("heroku.redis.read_iops:0.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the write_iops" do
+            expect(statsd.buffer[5]).to eq("heroku.redis.write_iops:0.11282|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the memory_total" do
+            expect(statsd.buffer[6]).to eq("heroku.redis.memory_total:15664876.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the memory_free" do
+            expect(statsd.buffer[7]).to eq("heroku.redis.memory_free:12688956.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the memory_cached" do
+            expect(statsd.buffer[8]).to eq("heroku.redis.memory_cached:1762284.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the memory_redis" do
+            expect(statsd.buffer[9]).to eq("heroku.redis.memory_redis:1908016.0|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the hit_rate" do
+            expect(statsd.buffer[10]).to eq("heroku.redis.hit_rate:0.0096774|g|#drain:abc123")
+          end
+
+          it "sends a gauge for the evicted_keys" do
+            expect(statsd.buffer[11]).to eq("heroku.redis.evicted_keys:0|g|#drain:abc123")
+          end
+
+          it "increments drain" do
+            expect(statsd.buffer[12]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
+          end
+        end
+
         context "postgres logs" do
           before do
             post "/logs", %q{527 <134>1 2016-08-19T11:23:29+00:00 host app heroku-postgres - source=DATABASE sample#current_transaction=1947 sample#db_size=8945836.0bytes sample#tables=17 sample#active-connections=3 sample#waiting-connections=0 sample#index-cache-hit-rate=0.99396 sample#table-cache-hit-rate=0.99828 sample#load-avg-1m=0.02 sample#load-avg-5m=0.005 sample#load-avg-15m=0 sample#read-iops=0 sample#write-iops=0.011458 sample#memory-total=4045592.0kB sample#memory-free=1560288.0kB sample#memory-cached=1982288.0kB sample#memory-postgres=21292kB}

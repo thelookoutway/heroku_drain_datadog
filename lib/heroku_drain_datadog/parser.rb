@@ -8,6 +8,7 @@ module HerokuDrainDatadog
     HEROKU_SERVICE = "heroku"
     NEW_LINE_CHAR = "\n"
     POSTGRES_SERVICE = "heroku-postgres"
+    REDIS_SERVICE = "heroku-redis"
     ROUTER_SERVICE = "router"
     SPACE_CHAR = " "
 
@@ -55,6 +56,8 @@ module HerokuDrainDatadog
         :router
       when tokens[0] == HEROKU_SERVICE && tokens[1] =~ DYNO_SERVICE
         :dyno
+      when tokens[1] == REDIS_SERVICE
+        :redis
       when tokens[1] == POSTGRES_SERVICE
         :postgres
       end
