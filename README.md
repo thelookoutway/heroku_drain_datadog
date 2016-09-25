@@ -1,7 +1,14 @@
 # Heroku Drain for Datadog
 
 A micro Ruby app that drains logs from Heroku, derives the metrics, and
-sends them to Datadog.
+sends them to Datadog. Supported services are:
+
+* Heroku Router
+* Heroku Postgres
+* Heroku Redis
+* Dyno
+
+See `config/default.yml` for a full list of metrics.
 
 ## System Dependencies
 
