@@ -18,7 +18,7 @@ See `config/default.yml` for a full list of metrics.
 
 First, deploy the drain:
 
-    $ git clone https://github.com/tatey/heroku-drain-datadog.git
+    $ git clone https://github.com/fivegoodfriends/heroku-drain-datadog.git
     $ heroku apps create
     $ heroku buildpacks:add https://github.com/miketheman/heroku-buildpack-datadog.git
     $ heroku buildpacks:add heroku/ruby
