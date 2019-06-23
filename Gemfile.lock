@@ -4,7 +4,7 @@ GEM
     byebug (9.0.5)
     diff-lcs (1.2.5)
     dogstatsd-ruby (2.0.0)
-    puma (3.6.0)
+    puma (3.12.1)
     rack (2.0.6)
     rack-test (0.6.3)
       rack (>= 1.0)
