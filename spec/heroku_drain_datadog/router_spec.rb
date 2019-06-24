@@ -4,14 +4,18 @@ require "logger"
 require "datadog/statsd"
 require "heroku_drain_datadog/configuration"
 require "heroku_drain_datadog/router"
+require "./spec/helpers/fake_udp_socket"
 
 RSpec.describe HerokuDrainDatadog::Router do
   include Rack::Test::Methods
 
   describe "POST /logs" do
-    let(:statsd) { Datadog::Statsd.new }
+    let(:socket) { FakeUDPSocket.new }
 
     let(:app) do
+      statsd = Datadog::Statsd.new
+      statsd.connection.instance_variable_set(:@socket, socket)
+
       HerokuDrainDatadog::Router.new(
         config: HerokuDrainDatadog::Configuration.default,
         logger: Logger.new(StringIO.new),
@@ -19,11 +23,8 @@ RSpec.describe HerokuDrainDatadog::Router do
       ).app
     end
 
-    # Batch so we can set expectations on the buffered metrics.
-    around do |example|
-      statsd.batch do
-        example.run
-      end
+    after do
+      socket.flush
     end
 
     it "is a 401 with bad credentials" do
@@ -39,8 +40,8 @@ RSpec.describe HerokuDrainDatadog::Router do
 
       it "does not the drain or app in the tags" do
         post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-        expect(statsd.buffer[0]).to_not include("drain:")
-        expect(statsd.buffer[0]).to_not include("app:")
+        expect(socket.buffer[0]).to_not include("drain:")
+        expect(socket.buffer[0]).to_not include("app:")
       end
 
       context "and drain token header" do
@@ -50,7 +51,7 @@ RSpec.describe HerokuDrainDatadog::Router do
 
         context "empty request body" do
           it "doesn't send any metrics" do
-            expect(statsd.buffer.length).to eq(0)
+            expect(socket.buffer.length).to eq(0)
           end
 
           it "is a 204" do
@@ -62,7 +63,7 @@ RSpec.describe HerokuDrainDatadog::Router do
 
         context "malformed request body" do
           it "doesn't send any metrics" do
-            expect(statsd.buffer.length).to eq(0)
+            expect(socket.buffer.length).to eq(0)
           end
 
           it "is a 204" do
@@ -78,19 +79,19 @@ RSpec.describe HerokuDrainDatadog::Router do
           end
 
           it "sends 3 metrics" do
-            expect(statsd.buffer.length).to eq(3)
+            expect(socket.buffer.length).to eq(3)
           end
 
           it "sends a histogram for connect" do
-            expect(statsd.buffer[0]).to eq("heroku.router.connect:0.0|h|#drain:abc123,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#drain:abc123,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
           end
 
           it "sends a histogram for service" do
-            expect(statsd.buffer[1]).to eq("heroku.router.service:2.0|h|#drain:abc123,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            expect(socket.buffer[1]).to eq("heroku.router.service:2.0|h|#drain:abc123,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
           end
 
           it "increments drain" do
-            expect(statsd.buffer[2]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
+            expect(socket.buffer[2]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
           end
 
           it "is a 204" do
@@ -105,31 +106,31 @@ RSpec.describe HerokuDrainDatadog::Router do
           end
 
           it "sends 6 metrics" do
-            expect(statsd.buffer.length).to eq(6)
+            expect(socket.buffer.length).to eq(6)
           end
 
           it "sends a gauge for memory_cache" do
-            expect(statsd.buffer[0]).to eq("heroku.dyno.memory_cache:3.63|g|#drain:abc123,source:web.1")
+            expect(socket.buffer[0]).to eq("heroku.dyno.memory_cache:3.63|g|#drain:abc123,source:web.1")
           end
 
           it "sends a gauge for memory_quota" do
-            expect(statsd.buffer[1]).to eq("heroku.dyno.memory_quota:512.0|g|#drain:abc123,source:web.1")
+            expect(socket.buffer[1]).to eq("heroku.dyno.memory_quota:512.0|g|#drain:abc123,source:web.1")
           end
 
           it "sends a gauge for memory_rss" do
-            expect(statsd.buffer[2]).to eq("heroku.dyno.memory_rss:139.79|g|#drain:abc123,source:web.1")
+            expect(socket.buffer[2]).to eq("heroku.dyno.memory_rss:139.79|g|#drain:abc123,source:web.1")
           end
 
           it "sends a gauge for memory_swap" do
-            expect(statsd.buffer[3]).to eq("heroku.dyno.memory_swap:11.43|g|#drain:abc123,source:web.1")
+            expect(socket.buffer[3]).to eq("heroku.dyno.memory_swap:11.43|g|#drain:abc123,source:web.1")
           end
 
           it "sends a gauge for memory_quota" do
-            expect(statsd.buffer[4]).to eq("heroku.dyno.memory_total:154.85|g|#drain:abc123,source:web.1")
+            expect(socket.buffer[4]).to eq("heroku.dyno.memory_total:154.85|g|#drain:abc123,source:web.1")
           end
 
           it "increments drain" do
-            expect(statsd.buffer[5]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
+            expect(socket.buffer[5]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
           end
         end
 
@@ -139,59 +140,59 @@ RSpec.describe HerokuDrainDatadog::Router do
           end
 
           it "sends 13 metrics" do
-            expect(statsd.buffer.length).to eq(13)
+            expect(socket.buffer.length).to eq(13)
           end
 
           it "sends a gauge for the active_connections" do
-            expect(statsd.buffer[0]).to eq("heroku.redis.active_aconnections:27|g|#drain:abc123")
+            expect(socket.buffer[0]).to eq("heroku.redis.active_aconnections:27|g|#drain:abc123")
           end
 
           it "sends a gauge for the load_avg_1m" do
-            expect(statsd.buffer[1]).to eq("heroku.redis.load_avg_1m:0.0|g|#drain:abc123")
+            expect(socket.buffer[1]).to eq("heroku.redis.load_avg_1m:0.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the load_avg_5m" do
-            expect(statsd.buffer[2]).to eq("heroku.redis.load_avg_5m:0.015|g|#drain:abc123")
+            expect(socket.buffer[2]).to eq("heroku.redis.load_avg_5m:0.015|g|#drain:abc123")
           end
 
           it "sends a gauge for the load_avg_15m" do
-            expect(statsd.buffer[3]).to eq("heroku.redis.load_avg_15m:0.01|g|#drain:abc123")
+            expect(socket.buffer[3]).to eq("heroku.redis.load_avg_15m:0.01|g|#drain:abc123")
           end
 
           it "sends a gauge for the read_iops" do
-            expect(statsd.buffer[4]).to eq("heroku.redis.read_iops:0.0|g|#drain:abc123")
+            expect(socket.buffer[4]).to eq("heroku.redis.read_iops:0.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the write_iops" do
-            expect(statsd.buffer[5]).to eq("heroku.redis.write_iops:0.11282|g|#drain:abc123")
+            expect(socket.buffer[5]).to eq("heroku.redis.write_iops:0.11282|g|#drain:abc123")
           end
 
           it "sends a gauge for the memory_total" do
-            expect(statsd.buffer[6]).to eq("heroku.redis.memory_total:15664876.0|g|#drain:abc123")
+            expect(socket.buffer[6]).to eq("heroku.redis.memory_total:15664876.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the memory_free" do
-            expect(statsd.buffer[7]).to eq("heroku.redis.memory_free:12688956.0|g|#drain:abc123")
+            expect(socket.buffer[7]).to eq("heroku.redis.memory_free:12688956.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the memory_cached" do
-            expect(statsd.buffer[8]).to eq("heroku.redis.memory_cached:1762284.0|g|#drain:abc123")
+            expect(socket.buffer[8]).to eq("heroku.redis.memory_cached:1762284.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the memory_redis" do
-            expect(statsd.buffer[9]).to eq("heroku.redis.memory_redis:1908016.0|g|#drain:abc123")
+            expect(socket.buffer[9]).to eq("heroku.redis.memory_redis:1908016.0|g|#drain:abc123")
           end
 
           it "sends a gauge for the hit_rate" do
-            expect(statsd.buffer[10]).to eq("heroku.redis.hit_rate:0.0096774|g|#drain:abc123")
+            expect(socket.buffer[10]).to eq("heroku.redis.hit_rate:0.0096774|g|#drain:abc123")
           end
 
           it "sends a gauge for the evicted_keys" do
-            expect(statsd.buffer[11]).to eq("heroku.redis.evicted_keys:0|g|#drain:abc123")
+            expect(socket.buffer[11]).to eq("heroku.redis.evicted_keys:0|g|#drain:abc123")
           end
 
           it "increments drain" do
-            expect(statsd.buffer[12]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
+            expect(socket.buffer[12]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
           end
         end
 
@@ -201,71 +202,71 @@ RSpec.describe HerokuDrainDatadog::Router do
           end
 
           it "sends 16 metrics" do
-            expect(statsd.buffer.length).to eq(16)
+            expect(socket.buffer.length).to eq(16)
           end
 
           it "sends a gauge for db_size" do
-            expect(statsd.buffer[0]).to eq("heroku.postgres.db_size:8945836.0|g|#drain:abc123")
+            expect(socket.buffer[0]).to eq("heroku.postgres.db_size:8945836.0|g|#drain:abc123")
           end
 
           it "sends a gauge for tables" do
-            expect(statsd.buffer[1]).to eq("heroku.postgres.tables:17|g|#drain:abc123")
+            expect(socket.buffer[1]).to eq("heroku.postgres.tables:17|g|#drain:abc123")
           end
 
           it "sends a gauge for active_connections" do
-            expect(statsd.buffer[2]).to eq("heroku.postgres.active_connections:3|g|#drain:abc123")
+            expect(socket.buffer[2]).to eq("heroku.postgres.active_connections:3|g|#drain:abc123")
           end
 
           it "sends a gauge for waiting_connections" do
-            expect(statsd.buffer[3]).to eq("heroku.postgres.waiting_connections:0|g|#drain:abc123")
+            expect(socket.buffer[3]).to eq("heroku.postgres.waiting_connections:0|g|#drain:abc123")
           end
 
           it "sends a gauge for index_cache_hit_rate" do
-            expect(statsd.buffer[4]).to eq("heroku.postgres.index_cache_hit_rate:0.99396|g|#drain:abc123")
+            expect(socket.buffer[4]).to eq("heroku.postgres.index_cache_hit_rate:0.99396|g|#drain:abc123")
           end
 
           it "sends a gauge for table_cache_hit_rate" do
-            expect(statsd.buffer[5]).to eq("heroku.postgres.table_cache_hit_rate:0.99828|g|#drain:abc123")
+            expect(socket.buffer[5]).to eq("heroku.postgres.table_cache_hit_rate:0.99828|g|#drain:abc123")
           end
 
           it "sends a gauge for load_avg_1m" do
-            expect(statsd.buffer[6]).to eq("heroku.postgres.load_avg_1m:0.02|g|#drain:abc123")
+            expect(socket.buffer[6]).to eq("heroku.postgres.load_avg_1m:0.02|g|#drain:abc123")
           end
 
           it "sends a gauge for load_avg_5m" do
-            expect(statsd.buffer[7]).to eq("heroku.postgres.load_avg_5m:0.005|g|#drain:abc123")
+            expect(socket.buffer[7]).to eq("heroku.postgres.load_avg_5m:0.005|g|#drain:abc123")
           end
 
           it "sends a gauge for load_avg_15m" do
-            expect(statsd.buffer[8]).to eq("heroku.postgres.load_avg_15m:0.0|g|#drain:abc123")
+            expect(socket.buffer[8]).to eq("heroku.postgres.load_avg_15m:0.0|g|#drain:abc123")
           end
 
           it "sends a gauge for read_iops" do
-            expect(statsd.buffer[9]).to eq("heroku.postgres.read_iops:0.0|g|#drain:abc123")
+            expect(socket.buffer[9]).to eq("heroku.postgres.read_iops:0.0|g|#drain:abc123")
           end
 
           it "sends a gauge for write_iops" do
-            expect(statsd.buffer[10]).to eq("heroku.postgres.write_iops:0.011458|g|#drain:abc123")
+            expect(socket.buffer[10]).to eq("heroku.postgres.write_iops:0.011458|g|#drain:abc123")
           end
 
           it "sends a gauge for memory_total" do
-            expect(statsd.buffer[11]).to eq("heroku.postgres.memory_total:4045592.0|g|#drain:abc123")
+            expect(socket.buffer[11]).to eq("heroku.postgres.memory_total:4045592.0|g|#drain:abc123")
           end
 
           it "sends a gauge for memory_free" do
-            expect(statsd.buffer[12]).to eq("heroku.postgres.memory_free:1560288.0|g|#drain:abc123")
+            expect(socket.buffer[12]).to eq("heroku.postgres.memory_free:1560288.0|g|#drain:abc123")
           end
 
           it "sends a gauge for memory_cached" do
-            expect(statsd.buffer[13]).to eq("heroku.postgres.memory_cached:1982288.0|g|#drain:abc123")
+            expect(socket.buffer[13]).to eq("heroku.postgres.memory_cached:1982288.0|g|#drain:abc123")
           end
 
           it "sends a gauge for memory_postgres" do
-            expect(statsd.buffer[14]).to eq("heroku.postgres.memory_postgres:21292.0|g|#drain:abc123")
+            expect(socket.buffer[14]).to eq("heroku.postgres.memory_postgres:21292.0|g|#drain:abc123")
           end
 
           it "increments drain" do
-            expect(statsd.buffer[15]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
+            expect(socket.buffer[15]).to eq("heroku.drain.request:1|c|#status:204,host:example.org,path:/logs")
           end
         end
 
@@ -283,7 +284,7 @@ RSpec.describe HerokuDrainDatadog::Router do
 
           it "includes the app's name in the tags" do
             post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-            expect(statsd.buffer[0]).to eq("heroku.router.connect:0.0|h|#drain:abc123,app:myapp,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#drain:abc123,app:myapp,dyno:web.1,method:GET,host:app.fivegoodfriends.com.au,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
           end
         end
       end
