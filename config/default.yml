@@ -12,10 +12,14 @@ router:
       type: float
       metric: histogram
   tags:
-    - dyno
-    - method
-    - path
-    - status
+    - heroku_name: dyno
+      datadog_name: source
+    - heroku_name: method
+      datadog_name: method
+    - heroku_name: path
+      datadog_name: path
+    - heroku_name: status
+      datadog_name: status
 
 dyno:
   metrics:
@@ -60,7 +64,8 @@ dyno:
       type: float
       metric: gauge
   tags:
-    - source
+    - heroku_name: source
+      datadog_name: source
 
 redis:
   metrics:

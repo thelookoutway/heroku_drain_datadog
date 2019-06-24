@@ -25,7 +25,7 @@ module HerokuDrainDatadog
         return
       end
 
-      tags = default_tags + derive_tags(log_entry.data, service.tags)
+      tags = default_tags + derive_tags(log_entry.data, service)
       service.metrics.each do |metric|
         raw_value = log_entry.data[metric.heroku_name]
         unless raw_value
@@ -47,10 +47,10 @@ module HerokuDrainDatadog
       end
     end
 
-    def derive_tags(data, keys)
-      keys.reduce([]) do |tags, key|
-        value = data[key]
-        tags << "#{key}:#{value.tr("\"", "")}" if value
+    def derive_tags(data, service)
+      service.tags.reduce([]) do |tags, definition|
+        value = data.dig(definition["heroku_name"])
+        tags << "#{definition["datadog_name"]}:#{value.tr("\"", "")}" if value
         tags
       end
     end
