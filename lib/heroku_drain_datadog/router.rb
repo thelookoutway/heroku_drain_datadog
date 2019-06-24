@@ -4,6 +4,8 @@ require "rack/request_counter"
 
 module HerokuDrainDatadog
   class Router
+    BLANK = ""
+
     def initialize(config:, logger:, statsd:)
       @app = Class.new(Roda) do
         plugin :drop_body
@@ -23,6 +25,7 @@ module HerokuDrainDatadog
             controller = Controller.new(config: config, logger: logger, statsd: statsd)
             controller.call(request.body.read, default_tags: default_tags)
             response.status = 204
+            BLANK
           end
         end
 
