@@ -46,6 +46,7 @@ module HerokuDrainDatadog
         Service::Tag.new(
           heroku_name: tag_options.fetch("heroku_name"),
           datadog_name: tag_options.fetch("datadog_name"),
+          type: tag_options.fetch("type").to_sym,
         )
       end
     end
