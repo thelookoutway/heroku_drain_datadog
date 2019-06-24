@@ -25,7 +25,6 @@ module Rack
       request = Rack::Request.new(env)
       tags = [
         "status:#{status}",
-        "host:#{request.host}",
         "path:#{request.path}",
       ]
       @statsd.increment("heroku.drain.request", tags: tags)
