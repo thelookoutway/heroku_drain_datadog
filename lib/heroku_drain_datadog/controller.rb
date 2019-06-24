@@ -32,7 +32,7 @@ module HerokuDrainDatadog
           @logger.debug("[#{self.class}#send_stats] skipping, missing value")
           next
         end
-        typed_value = coerce_value(raw_value, metric.type)
+        typed_value = metric.coerce(value: raw_value)
         unless typed_value
           @logger.debug("[#{self.class}#send_stats] skipping, failed to coerce type")
           next
@@ -55,7 +55,7 @@ module HerokuDrainDatadog
           return tags
         end
 
-        typed_value = coerce_value(raw_value, tag.type)
+        typed_value = tag.coerce(value: raw_value)
         unless typed_value
           @logger.debug("[#{self.class}#derive_tags] skipping, failed to coerce type")
           return tags
@@ -65,25 +65,5 @@ module HerokuDrainDatadog
         tags
       end
     end
-
-    def coerce_value(value, type)
-      case type
-      when :float
-        value.to_f
-      when :integer
-        value.to_i
-      when :string
-        value.to_s.tr("\"", "")
-      when :Source2DynoType
-        Source2DynoType.coerce(value)
-      end
-    end
-
-    class Source2DynoType
-      def self.coerce(value)
-        value.split(".").first
-      end
-    end
-    private_constant :Source2DynoType
   end
 end

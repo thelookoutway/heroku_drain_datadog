@@ -10,6 +10,15 @@ module HerokuDrainDatadog
         @type = type
         @metric = metric
       end
+
+      def coerce(value:)
+        case type
+        when :float
+          value.to_f
+        when :integer
+          value.to_i
+        end
+      end
     end
   end
 end
