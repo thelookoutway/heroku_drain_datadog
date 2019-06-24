@@ -1,6 +1,5 @@
 require "yaml"
 require "heroku_drain_datadog/service"
-require "heroku_drain_datadog/metric"
 
 module HerokuDrainDatadog
   class Configuration
@@ -31,7 +30,7 @@ module HerokuDrainDatadog
     def extract_metrics(options)
       options.fetch("metrics", []).reduce([]) do |metrics, metric_options|
         if metric_options["enabled"] == true
-          metrics << Metric.new(
+          metrics << Service::Metric.new(
             heroku_name: metric_options.fetch("heroku_name"),
             datadog_name: metric_options.fetch("datadog_name"),
             type: metric_options.fetch("type").to_sym,
@@ -43,7 +42,12 @@ module HerokuDrainDatadog
     end
 
     def extract_tags(options)
-      options.fetch("tags", [])
+      options.fetch("tags", []).map do |tag_options|
+        Service::Tag.new(
+          heroku_name: tag_options.fetch("heroku_name"),
+          datadog_name: tag_options.fetch("datadog_name"),
+        )
+      end
     end
   end
 end

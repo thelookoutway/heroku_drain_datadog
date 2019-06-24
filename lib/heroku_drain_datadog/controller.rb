@@ -48,9 +48,9 @@ module HerokuDrainDatadog
     end
 
     def derive_tags(data, service)
-      service.tags.reduce([]) do |tags, definition|
-        value = data.dig(definition["heroku_name"])
-        tags << "#{definition["datadog_name"]}:#{value.tr("\"", "")}" if value
+      service.tags.reduce([]) do |tags, tag|
+        value = data.dig(tag.heroku_name)
+        tags << "#{tag.datadog_name}:#{value.tr("\"", "")}" if value
         tags
       end
     end
