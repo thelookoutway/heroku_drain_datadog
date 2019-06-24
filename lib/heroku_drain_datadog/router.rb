@@ -34,12 +34,12 @@ module HerokuDrainDatadog
         def derive_default_tags(drain_token)
           return [] unless drain_token
 
-          tags = ["drain:#{drain_token}"]
           app_name = ENV["DRAIN_#{drain_token}"]
           if app_name
-            tags << "app:#{app_name}"
+            ["appname:#{app_name}"]
+          else
+            []
           end
-          tags
         end
       end
     end
