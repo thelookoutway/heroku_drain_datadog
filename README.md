@@ -1,4 +1,4 @@
-# Heroku Drain for Datadog
+# Heroku Drain for Datadog [![Build status](https://badge.buildkite.com/194bc494c91e01c19fc754b5c78f792770e707b9ecfd81bae2.svg)](https://buildkite.com/fivegoodfriends/heroku-drain-datadog)
 
 A micro Ruby app that drains logs from Heroku, derives the metrics, and sends them to Datadog. Supported services are:
 
