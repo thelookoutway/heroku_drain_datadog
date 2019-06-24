@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+IFS=$'\n\t'
+
+echo "--- Deploying to $HEROKU_APP_NAME"
+if [ "$(git remote | grep $HEROKU_APP_NAME)" = $HEROKU_APP_NAME ]; then
+  git remote remove $HEROKU_APP_NAME
+fi
+git remote add $HEROKU_APP_NAME "https://git.heroku.com/$HEROKU_APP_NAME.git"
+git push --force $HEROKU_APP_NAME "$BUILDKITE_COMMIT":master

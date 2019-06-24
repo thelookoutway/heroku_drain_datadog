@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+export RACK_ENV='test'
+
+echo '--- source config'
+. .envrc
+
+echo '--- run bundler'
+bundle install
+
+echo '--- run specs'
+./bin/rspec
