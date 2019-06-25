@@ -16,10 +16,13 @@ module HerokuDrainDatadog
         buffer = request.body.read
         @logger.debug("[#{self.class}#call] #{buffer}")
 
-        default_tags = derive_default_tags(request.env["HTTP_LOGPLEX_DRAIN_TOKEN"])
+        drain_token = request.env["HTTP_LOGPLEX_DRAIN_TOKEN"]
+        disallowed_services = derive_dyno_disallowed_services(drain_token)
+        default_tags = derive_default_tags(drain_token)
+
         log_entries = @parser.call(buffer)
         log_entries.each do |log_entry|
-          send_stats(log_entry, default_tags)
+          send_stats(log_entry, disallowed_services, default_tags)
         end
 
         [204, EMPTY]
@@ -27,9 +30,12 @@ module HerokuDrainDatadog
 
       private
 
-      def send_stats(log_entry, default_tags)
+      def send_stats(log_entry, disallowed_services, default_tags)
         service = @config[log_entry.service]
-        unless service
+        if !service
+          return
+        end
+        if disallowed_services.include?(log_entry.service)
           return
         end
 
@@ -55,19 +61,6 @@ module HerokuDrainDatadog
         end
       end
 
-      def derive_default_tags(drain_token)
-        unless drain_token
-          return []
-        end
-
-        value = ENV["DRAIN_TAGS_FOR_#{drain_token}"]
-        unless value
-          return []
-        end
-
-        value.to_s.split(",")
-      end
-
       def derive_tags(data, service)
         service.tags.reduce([]) do |tags, tag|
           raw_value = data[tag.heroku_name]
@@ -85,6 +78,32 @@ module HerokuDrainDatadog
           tags << "#{tag.datadog_name}:#{typed_value}"
           tags
         end
+      end
+
+      def derive_dyno_disallowed_services(drain_token)
+        unless drain_token
+          return []
+        end
+
+        value = ENV["DRAIN_DISALLOWED_SERVICES_FOR_#{drain_token}"]
+        unless value
+          return []
+        end
+
+        value.to_s.split(",").map(&:to_sym)
+      end
+
+      def derive_default_tags(drain_token)
+        unless drain_token
+          return []
+        end
+
+        value = ENV["DRAIN_TAGS_FOR_#{drain_token}"]
+        unless value
+          return []
+        end
+
+        value.to_s.split(",")
       end
     end
   end
