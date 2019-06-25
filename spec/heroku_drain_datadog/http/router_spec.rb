@@ -269,29 +269,7 @@ RSpec.describe HerokuDrainDatadog::HTTP::Router do
           end
         end
 
-        context "and drain disallowed services env var" do
-          it "can exclude one service" do
-            with_env("DRAIN_DISALLOWED_SERVICES_FOR_abc123", "router") do
-              post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-              expect(socket.buffer).to satisfy { |buffer| buffer.none? { |message| message.include?("heroku.router") } }
-
-              post "/logs", %q{334 <45>1 2016-08-19T11:23:01.581780+00:00 host heroku web.1 - source=web.1 dyno=heroku.54241834.4b88c98d-6243-4194-af49-8db9b53be371 sample#memory_total=154.85MB sample#memory_rss=139.79MB sample#memory_cache=3.63MB sample#memory_swap=11.43MB sample#memory_pgpgin=80522pages sample#memory_pgpgout=53004pages sample#memory_quota=512.00MB}
-              expect(socket.buffer).to satisfy { |buffer| buffer.any? { |message| message.include?("heroku.dyno.memory") } }
-            end
-          end
-
-          it "can exclude many services" do
-            with_env("DRAIN_DISALLOWED_SERVICES_FOR_abc123", "router,dyno") do
-              post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-              expect(socket.buffer).to satisfy { |buffer| buffer.none? { |message| message.include?("heroku.router") } }
-
-              post "/logs", %q{334 <45>1 2016-08-19T11:23:01.581780+00:00 host heroku web.1 - source=web.1 dyno=heroku.54241834.4b88c98d-6243-4194-af49-8db9b53be371 sample#memory_total=154.85MB sample#memory_rss=139.79MB sample#memory_cache=3.63MB sample#memory_swap=11.43MB sample#memory_pgpgin=80522pages sample#memory_pgpgout=53004pages sample#memory_quota=512.00MB}
-              expect(socket.buffer).to satisfy { |buffer| buffer.none? { |message| message.include?("heroku.dyno.memory") } }
-            end
-          end
-        end
-
-        context "and drain dyno tag env var" do
+        context "and drain env var" do
           it "can be a single tag" do
             with_env("DRAIN_TAGS_FOR_abc123", "service:myapp") do
               post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
@@ -305,17 +283,18 @@ RSpec.describe HerokuDrainDatadog::HTTP::Router do
               expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#env:production,service:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
             end
           end
-        end
 
-        private
+          private
 
-        def with_env(key, value, &block)
-          begin
-            original_value = ENV[key]
-            ENV[key] = value
-            yield
-          ensure
-            ENV[key] = original_value
+          def with_env(key, value, &block)
+            begin
+              key = "DRAIN_TAGS_FOR_abc123"
+              original_value = ENV[key]
+              ENV[key] = value
+              yield
+            ensure
+              ENV[key] = original_value
+            end
           end
         end
       end
