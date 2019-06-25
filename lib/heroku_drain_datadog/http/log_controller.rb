@@ -16,7 +16,7 @@ module HerokuDrainDatadog
         buffer = request.body.read
         @logger.debug("[#{self.class}#call] #{buffer}")
 
-        default_tags = derive_default_tags(request.env["HTTP_LOGPLEX_DRAIN_TOKEN"])
+        default_tags = derive_drain_tags(request.env["HTTP_LOGPLEX_DRAIN_TOKEN"])
         log_entries = @parser.call(buffer)
         log_entries.each do |log_entry|
           send_stats(log_entry, default_tags)
@@ -55,7 +55,7 @@ module HerokuDrainDatadog
         end
       end
 
-      def derive_default_tags(drain_token)
+      def derive_drain_tags(drain_token)
         unless drain_token
           return []
         end
