@@ -33,9 +33,9 @@ Then, add runtime metrics and the drain to an existing app:
     $ heroku labs:enable log-runtime-metrics --app <MY-APP>
     $ heroku drains:add https://user:<YOUR_DRAIN_PASSWORD>@<YOUR_APP>.herokuapp.com/logs --app <MY-APP>
 
-Then, map the drain to the app:
+Then, optionally map the drain ID to any number of tags:
 
-    $ heroku config:set DRAIN_<LOGPLEX_DRAIN_TOKEN>=<MY-APP> -a <DRAIN-APP>
+    $ heroku config:set DRAIN_TAGS_FOR_<LOGPLEX_DRAIN_TOKEN>="env:production,service:app" -a <DRAIN-APP>
 
 ## Development
 
