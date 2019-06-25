@@ -21,27 +21,11 @@ module HerokuDrainDatadog
         route do |r|
           # POST /logs
           r.post "logs" do
-            default_tags = derive_default_tags(r.env["HTTP_LOGPLEX_DRAIN_TOKEN"])
             controller = Controller.new(config: config, logger: logger, statsd: statsd)
-            controller.call(request.body.read, default_tags: default_tags)
+            controller.call(request)
             response.status = 204
             BLANK
           end
-        end
-
-        private
-
-        def derive_default_tags(drain_token)
-          unless drain_token
-            return []
-          end
-
-          value = ENV["DRAIN_TAGS_FOR_#{drain_token}"]
-          unless value
-            return []
-          end
-
-          value.to_s.split(",")
         end
       end
     end
