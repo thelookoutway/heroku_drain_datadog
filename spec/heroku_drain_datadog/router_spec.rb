@@ -270,20 +270,31 @@ RSpec.describe HerokuDrainDatadog::Router do
         end
 
         context "and drain env var" do
-          around do |example|
-            begin
-              key = "DRAIN_abc123"
-              original_value = ENV[key]
-              ENV[key] = "myapp"
-              example.run
-            ensure
-              ENV[key] = original_value
+          it "can be a single tag" do
+            with_env("DRAIN_TAGS_FOR_abc123", "service:myapp") do
+              post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
+              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#service:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
             end
           end
 
-          it "includes the app's name in the tags" do
-            post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-            expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#appname:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+          it "can be many tags" do
+            with_env("DRAIN_TAGS_FOR_abc123", "env:production,service:myapp") do
+              post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
+              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#env:production,service:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            end
+          end
+
+          private
+
+          def with_env(key, value, &block)
+            begin
+              key = "DRAIN_TAGS_FOR_abc123"
+              original_value = ENV[key]
+              ENV[key] = value
+              yield
+            ensure
+              ENV[key] = original_value
+            end
           end
         end
       end
