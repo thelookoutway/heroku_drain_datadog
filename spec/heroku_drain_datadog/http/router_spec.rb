@@ -3,10 +3,10 @@ require "rack/test"
 require "logger"
 require "datadog/statsd"
 require "heroku_drain_datadog/configuration"
-require "heroku_drain_datadog/router"
+require "heroku_drain_datadog/http/router"
 require "./spec/helpers/fake_udp_socket"
 
-RSpec.describe HerokuDrainDatadog::Router do
+RSpec.describe HerokuDrainDatadog::HTTP::Router do
   include Rack::Test::Methods
 
   describe "POST /logs" do
@@ -16,7 +16,7 @@ RSpec.describe HerokuDrainDatadog::Router do
       statsd = Datadog::Statsd.new
       statsd.connection.instance_variable_set(:@socket, socket)
 
-      HerokuDrainDatadog::Router.new(
+      HerokuDrainDatadog::HTTP::Router.new(
         config: HerokuDrainDatadog::Configuration.default,
         logger: Logger.new(StringIO.new),
         statsd: statsd,
