@@ -1,13 +1,25 @@
 # Heroku Drain for Datadog [![Build status](https://badge.buildkite.com/194bc494c91e01c19fc754b5c78f792770e707b9ecfd81bae2.svg)](https://buildkite.com/fivegoodfriends/heroku-drain-datadog)
 
-A micro Ruby app that drains logs from Heroku, derives the metrics, and sends them to Datadog. Supported services are:
+A micro Ruby app that drains logs from Heroku, extracts the metrics, and forwards them to Datadog. Supported services are:
 
 * Heroku Router
 * Heroku Postgres
 * Heroku Redis
 * Dyno
 
-See `config/default.yml` for a full list of metrics.
+By forwarding metrics to Datadog you could:
+
+* Set an alert when dynos are low on free memory.
+* Set an alert when Redis is approaching the maximum memory limit allowed by the current plan.
+* Graph the dyno's memory usage and load for each type of dyno (e.g. Worker, Web)
+* Graph the request queue
+
+See `config/default.yml` for a full list of metrics and how they map between Heroku and Datadog.
+
+### Example Dashboards
+
+![](https://user-images.githubusercontent.com/19860/60142182-0d2b3900-97fc-11e9-9f0b-11405a2d5312.png)
+![](https://user-images.githubusercontent.com/19860/60142183-0d2b3900-97fc-11e9-88a4-52ca32f62a6f.png)
 
 ## System Dependencies
 
