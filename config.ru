@@ -3,8 +3,10 @@ require "heroku_drain_datadog"
 require "logger"
 require "datadog/statsd"
 
-run HerokuDrainDatadog::HTTP::Router.new(
-  config: HerokuDrainDatadog::Configuration.default,
-  logger: Logger.new(STDOUT).tap { |l| l.level = ENV.fetch("LOG_LEVEL", "INFO") },
-  statsd: Datadog::Statsd.new,
-).app
+logger = Logger.new(STDOUT).tap { |l| l.level = ENV.fetch("LOG_LEVEL", Logger::Severity::INFO) }
+if logger.level == Logger::Severity::DEBUG
+  statsd = Datadog::Statsd.new(nil, nil, logger: logger)
+else
+  statsd = Datadog::Statsd.new
+end
+run HerokuDrainDatadog::HTTP::Router.new(config: HerokuDrainDatadog::Configuration.default, logger: logger, statsd: statsd).app

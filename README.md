@@ -59,6 +59,11 @@ Run the specs:
 
     $ bin/rspec
 
+Run the server and send a log entry:
+
+    $ DRAIN_PASSWORD=secret LOG_LEVEL=debug ./bin/puma -C config/puma.rb
+    $ curl -u :secret -X POST -d "338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112" http://localhost:3000/logs
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/fivegoodfriends/heroku_drain_datadog.
