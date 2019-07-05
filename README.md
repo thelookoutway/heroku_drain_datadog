@@ -26,28 +26,35 @@ See `config/default.yml` for a full list of metrics and how they map between Her
 * Ruby 2.6.2
 * [Heroku Buildpack for DataDog Agent](https://github.com/DataDog/heroku-buildpack-datadog.git)
 
-## Deploying
+## Setup
 
-First, deploy the drain:
+### Deploying the Drain
+
+To deploy the drain:
 
     $ git clone https://github.com/fivegoodfriends/heroku-drain-datadog.git
     $ heroku apps create
     $ heroku buildpacks:add https://github.com/DataDog/heroku-buildpack-datadog.git
     $ heroku buildpacks:add heroku/ruby
-    $ heroku labs:enable runtime-dyno-metadata
     $ heroku config:set DD_API_KEY=<YOUR_DATADOG_API_KEY>
     $ heroku config:set DRAIN_PASSWORD=<YOUR_DRAIN_PASSWORD>
     $ heroku config:set RACK_ENV=production
     $ git push heroku master
 
-Then, add runtime metrics and the drain to an existing app:
+The drain itself will not tag any of its metrics to avoid conflicting with forwarded metrics.
+
+### Instrumenting an App
+
+To instrument an app:
 
     $ heroku labs:enable log-runtime-metrics --app <MY-APP>
     $ heroku drains:add https://user:<YOUR_DRAIN_PASSWORD>@<YOUR_APP>.herokuapp.com/logs --app <MY-APP>
 
-Then, optionally map the drain token to any number of tags:
+All forwarded metrics will be tagged with appname, dyno, and dynotype. To set additional tags:
 
     $ heroku config:set DRAIN_TAGS_FOR_<LOGPLEX_DRAIN_TOKEN>="env:production,service:app" -a <DRAIN-APP>
+
+The drain token can be found by running `$ heroku drains -a <MY-APP>`
 
 ## Development
 
