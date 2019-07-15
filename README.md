@@ -41,7 +41,7 @@ To deploy the drain:
     $ heroku config:set RACK_ENV=production
     $ git push heroku master
 
-The drain itself will not tag any of its metrics to avoid conflicting with forwarded metrics.
+The drain itself will not use the dyno, dynotype, and appname tags to avoid conflicting with forwarded metrics.
 
 ### Instrumenting an App
 
@@ -50,7 +50,7 @@ To instrument an app:
     $ heroku labs:enable log-runtime-metrics --app <MY-APP>
     $ heroku drains:add https://user:<YOUR_DRAIN_PASSWORD>@<YOUR_APP>.herokuapp.com/logs --app <MY-APP>
 
-All forwarded metrics will be tagged with appname, dyno, and dynotype. To set additional tags:
+All forwarded metrics will be tagged with their appname, dyno, and dynotype. To set additional tags:
 
     $ heroku config:set DRAIN_TAGS_FOR_<LOGPLEX_DRAIN_TOKEN>="env:production,service:app" -a <DRAIN-APP>
 

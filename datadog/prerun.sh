@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-echo "The dyno and dynotype tags have been disabled"
+echo "Tags dyno, dynotype, and appname have been disabled"
 sed -i -e 's/^  - dyno:.*$/# &/' "$DATADOG_CONF"
 sed -i -e 's/^  - dynotype:.*$/# &/' "$DATADOG_CONF"
+sed -i -e 's/^  - appname:.*$/# &/' "$DATADOG_CONF"
