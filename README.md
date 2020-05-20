@@ -50,7 +50,9 @@ To instrument an app:
     $ heroku labs:enable log-runtime-metrics --app <MY-APP>
     $ heroku drains:add https://user:<YOUR_DRAIN_PASSWORD>@<YOUR_APP>.herokuapp.com/logs --app <MY-APP>
 
-All forwarded metrics will be tagged with their appname, dyno, and dynotype. To set additional tags:
+All forwarded metrics will be tagged with their dyno and dynotype.
+
+It's recommended to set additional tags such as service, env, and appname if you forward multiple metrics from multiple sources to Datadog.
 
     $ heroku config:set DRAIN_TAGS_FOR_<LOGPLEX_DRAIN_TOKEN>="env:production,service:app" -a <DRAIN-APP>
 
