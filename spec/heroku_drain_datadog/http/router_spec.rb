@@ -82,11 +82,11 @@ RSpec.describe HerokuDrainDatadog::HTTP::Router do
           end
 
           it "sends a histogram for connect" do
-            expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#source:web.1,dynotype:web,method:GET,status:304")
           end
 
           it "sends a histogram for service" do
-            expect(socket.buffer[1]).to eq("heroku.router.service:2.0|h|#source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+            expect(socket.buffer[1]).to eq("heroku.router.service:2.0|h|#source:web.1,dynotype:web,method:GET,status:304")
           end
 
           it "increments drain" do
@@ -273,14 +273,14 @@ RSpec.describe HerokuDrainDatadog::HTTP::Router do
           it "can be a single tag" do
             with_env("DRAIN_TAGS_FOR_abc123", "service:myapp") do
               post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#service:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#service:myapp,source:web.1,dynotype:web,method:GET,status:304")
             end
           end
 
           it "can be many tags" do
             with_env("DRAIN_TAGS_FOR_abc123", "env:production,service:myapp") do
               post "/logs", %q{338 <158>1 2016-08-20T02:15:10.862264+00:00 host heroku router - at=info method=GET path="/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css" host=app.fivegoodfriends.com.au request_id=bef7f609-eceb-4684-90ce-c249e6843112 fwd="58.6.203.42,54.239.202.42" dyno=web.1 connect=0ms service=2ms status=304 bytes=112}
-              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#env:production,service:myapp,source:web.1,dynotype:web,method:GET,path:/assets/admin-62f13e9f7cb78a2b3e436feaedd07fd67b74cce818f3bb7cfdab1e1c05dc2f89.css,status:304")
+              expect(socket.buffer[0]).to eq("heroku.router.connect:0.0|h|#env:production,service:myapp,source:web.1,dynotype:web,method:GET,status:304")
             end
           end
 

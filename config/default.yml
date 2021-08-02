@@ -21,9 +21,6 @@ router:
     - heroku_name: method
       datadog_name: method
       type: string
-    - heroku_name: path
-      datadog_name: path
-      type: string
     - heroku_name: status
       datadog_name: status
       type: string
