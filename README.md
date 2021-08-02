@@ -23,7 +23,7 @@ See `config/default.yml` for a full list of metrics and how they map between Her
 
 ## System Dependencies
 
-* Ruby 2.6.5
+* Ruby 2.7.4
 * [Heroku Buildpack for DataDog Agent](https://github.com/DataDog/heroku-buildpack-datadog.git)
 
 ## Setup
