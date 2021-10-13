@@ -5,7 +5,7 @@ GEM
     diff-lcs (1.4.4)
     dogstatsd-ruby (4.5.0)
     nio4r (2.5.8)
-    puma (5.5.1)
+    puma (5.5.2)
       nio4r (~> 2.0)
     rack (2.2.3)
     rack-test (1.1.0)
