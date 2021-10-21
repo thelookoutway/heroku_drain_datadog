@@ -1,16 +1,15 @@
+# Inspired by https://github.com/DataDog/dogstatsd-ruby/blob/master/spec/support/fake_udp_socket.rb
 class FakeUDPSocket
-  attr_reader :buffer
-
   def initialize
     @buffer = []
   end
 
   def send(message, *)
-    @buffer.push(message)
+    @buffer.push(message.dup)
   end
 
-  def flush
-    @buffer.clear
+  def recv
+    @buffer.shift
   end
 
   def to_s
@@ -19,5 +18,8 @@ class FakeUDPSocket
 
   def inspect
     "<FakeUDPSocket: #{@buffer.inspect}>"
+  end
+
+  def connect(*args)
   end
 end
