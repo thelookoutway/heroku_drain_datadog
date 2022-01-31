@@ -39,7 +39,7 @@ To deploy the drain:
     $ heroku config:set DD_API_KEY=<YOUR_DATADOG_API_KEY>
     $ heroku config:set DRAIN_PASSWORD=<YOUR_DRAIN_PASSWORD>
     $ heroku config:set RACK_ENV=production
-    $ git push heroku master
+    $ git push heroku main
 
 The drain itself will not use the dyno, dynotype, and appname tags to avoid conflicting with forwarded metrics.
 
