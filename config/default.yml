@@ -13,7 +13,7 @@ router:
       metric: histogram
   tags:
     - heroku_name: dyno
-      datadog_name: source
+      datadog_name: dyno
       type: string
     - heroku_name: dyno
       datadog_name: dynotype
@@ -69,7 +69,7 @@ dyno:
       metric: gauge
   tags:
     - heroku_name: source
-      datadog_name: source
+      datadog_name: dyno
       type: string
     - heroku_name: source
       datadog_name: dynotype
