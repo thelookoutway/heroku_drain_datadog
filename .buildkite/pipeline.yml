@@ -9,3 +9,5 @@
 - name: ":heroku: Deploy"
   command: "./script/deploy"
   branches: "main"
+  agents:
+    heroku: true
