@@ -1,5 +1,6 @@
 require "roda"
 require "heroku_drain_datadog/http/log_controller"
+require "rack/auth/basic"
 require "rack/request_counter"
 
 module HerokuDrainDatadog
