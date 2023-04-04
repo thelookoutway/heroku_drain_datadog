@@ -1,15 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 IFS=$'\n\t'
 
-export RACK_ENV='test'
+echo "--- Preparing environment variables"
+export RACK_ENV="test"
+set -o allexport
+source .env
+set +o allexport
 
-echo '--- source config'
-. .envrc
-
-echo '--- run bundler'
+echo "--- Installing gems"
 bundle install
 
-echo '--- run specs'
-./bin/rspec
+echo "+++ Running tests"
+bin/rspec
