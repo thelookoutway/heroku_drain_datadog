@@ -6,7 +6,9 @@ IFS=$'\n\t'
 export RACK_ENV='test'
 
 echo '--- source config'
-. .envrc
+set -o allexport
+source .env
+set +o allexport
 
 echo '--- run bundler'
 bundle install
