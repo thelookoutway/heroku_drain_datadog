@@ -3,15 +3,14 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-export RACK_ENV='test'
-
-echo '--- source config'
+echo "--- Preparing environment variables"
+export RACK_ENV="test"
 set -o allexport
 source .env
 set +o allexport
 
-echo '--- run bundler'
+echo "--- Installing gems"
 bundle install
 
-echo '--- run specs'
-./bin/rspec
+echo "+++ Running tests"
+bin/rspec
