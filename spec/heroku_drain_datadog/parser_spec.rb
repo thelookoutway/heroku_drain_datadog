@@ -6,6 +6,7 @@ RSpec.describe HerokuDrainDatadog::Parser do
   let(:dyno_log) { %q{334 <45>1 2016-08-19T11:23:01.581780+00:00 host heroku web.1 - source=web.1 dyno=heroku.54241834.4b88c98d-6243-4194-af49-8db9b53be371 sample#memory_total=154.85MB sample#memory_rss=139.79MB sample#memory_cache=3.63MB sample#memory_swap=11.43MB sample#memory_pgpgin=80522pages sample#memory_pgpgout=53004pages sample#memory_quota=512.00MB} }
   let(:redis_log) { %q{393 <134>1 2016-09-23T07:07:54+00:00 host app heroku-redis - source=REDIS addon=redis-cubed-98704 sample#active-connections=27 sample#load-avg-1m=0 sample#load-avg-5m=0.015 sample#load-avg-15m=0.01 sample#read-iops=0 sample#write-iops=0.11282 sample#memory-total=15664876.0kB sample#memory-free=12688956.0kB sample#memory-cached=1762284.0kB sample#memory-redis=1908016bytes sample#hit-rate=0.0096774 sample#evicted-keys=0} }
   let(:postgres_log) { %q{527 <134>1 2016-08-19T11:23:29+00:00 host app heroku-postgres - source=DATABASE addon=postgres-parallel-38743 sample#current_transaction=1947 sample#db_size=8945836.0bytes sample#tables=17 sample#active-connections=3 sample#waiting-connections=0 sample#index-cache-hit-rate=0.99396 sample#table-cache-hit-rate=0.99828 sample#load-avg-1m=0.02 sample#load-avg-5m=0.005 sample#load-avg-15m=0 sample#read-iops=0 sample#write-iops=0.011458 sample#memory-total=4045592.0kB sample#memory-free=1560288.0kB sample#memory-cached=1982288.0kB sample#memory-postgres=21292kB} }
+  let(:postgres_follower_log) { %q{123 <456>1 2023-12-05T03:10:36+00:00 host app heroku-postgres - source=HEROKU_POSTGRESQL_GRAY addon=postgres-follower-tlw-lookout-production sample#current_transaction=70868045 sample#db_size=49030205999bytes sample#tables=243 sample#active-connections=18 sample#waiting-connections=0 sample#index-cache-hit-rate=0.9875 sample#table-cache-hit-rate=0.63474 sample#load-avg-1m=1.06 sample#load-avg-5m=1.59 sample#load-avg-15m=1.175 sample#read-iops=1830.3 sample#write-iops=23.457 sample#tmp-disk-used=543633408 sample#tmp-disk-available=72435159040 sample#memory-total=3944484kB sample#memory-free=92388kB sample#memory-cached=3261980kB sample#memory-postgres=165416kB sample#follower-lag-commits=9 sample#wal-percentage-used=0.06451981873320072} }
 
   context "dyno logs" do
     let(:log_entry) { subject.call(dyno_log).first }
@@ -108,6 +109,14 @@ RSpec.describe HerokuDrainDatadog::Parser do
         "sample#memory-cached" => "1982288.0kB",
         "sample#memory-postgres" => "21292kB",
       })
+    end
+  end
+
+  context "postgres follower logs" do
+    let(:log_entry) { subject.call(postgres_follower_log).first }
+
+    it "include follower-lag-commits" do
+      expect(log_entry.data).to include("sample#follower-lag-commits" => "9")
     end
   end
 

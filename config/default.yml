@@ -219,6 +219,11 @@ postgres:
       enabled: true
       type: float
       metric: gauge
+    - heroku_name: "sample#follower-lag-commits"
+      datadog_name: heroku.postgres.follower_lag_commits
+      enabled: true
+      type: integer
+      metric: gauge
   tags:
     - heroku_name: addon
       datadog_name: addon

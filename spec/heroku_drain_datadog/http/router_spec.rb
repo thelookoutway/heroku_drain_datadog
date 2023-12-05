@@ -280,6 +280,19 @@ RSpec.describe HerokuDrainDatadog::HTTP::Router do
           end
         end
 
+        context "postgres follower logs" do
+          before do
+            post(
+              "/logs",
+              %q{123 <456>1 2023-12-05T03:10:36+00:00 host app heroku-postgres - source=HEROKU_POSTGRESQL_GRAY addon=postgres-follower-tlw-lookout-production sample#current_transaction=70868045 sample#db_size=49030205999bytes sample#tables=243 sample#active-connections=18 sample#waiting-connections=0 sample#index-cache-hit-rate=0.9875 sample#table-cache-hit-rate=0.63474 sample#load-avg-1m=1.06 sample#load-avg-5m=1.59 sample#load-avg-15m=1.175 sample#read-iops=1830.3 sample#write-iops=23.457 sample#tmp-disk-used=543633408 sample#tmp-disk-available=72435159040 sample#memory-total=3944484kB sample#memory-free=92388kB sample#memory-cached=3261980kB sample#memory-postgres=165416kB sample#follower-lag-commits=9 sample#wal-percentage-used=0.06451981873320072},
+            )
+          end
+
+          it "sends a gauge for follower_lag_commits" do
+            expect(output).to include("heroku.postgres.follower_lag_commits:9|g|#addon:postgres-follower-tlw-lookout-production")
+          end
+        end
+
         context "and drain env var" do
           it "can be a single tag" do
             with_env("DRAIN_TAGS_FOR_abc123", "service:myapp") do
