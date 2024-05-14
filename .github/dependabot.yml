@@ -9,4 +9,5 @@ updates:
       timezone: "Australia/Brisbane"
     labels:
       - "dependencies"
-      - "robin"
+    reviewers:
+      - "thelookoutway/site-reliability"
