@@ -4,6 +4,6 @@ let
   mkBundlerAppDevShell = nixpkgs.callPackage (import sources.bundler-app-dev-shell) {};
 in mkBundlerAppDevShell {
   buildInputs = with nixpkgs; [
-    ruby_3_1
+    ruby_3_3
   ];
 }
