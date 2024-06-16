@@ -11,28 +11,16 @@
         "url": "https://github.com/fivegoodfriends/bundler-app-dev-shell/archive/9b554b3f82fcceec86389f7cd0b87f60e6dddc5e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "niv": {
-        "branch": "master",
-        "description": "Easy dependency management for Nix projects",
-        "homepage": "https://github.com/nmattia/niv",
-        "owner": "nmattia",
-        "repo": "niv",
-        "rev": "ecabfde837ccfb392ccca235f96bfcf4bb8ab186",
-        "sha256": "1aij19grvzbxj0dal49bsnhq1lc23nrglv6p0f00gwznl6109snj",
-        "type": "tarball",
-        "url": "https://github.com/nmattia/niv/archive/ecabfde837ccfb392ccca235f96bfcf4bb8ab186.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "nixpkgs": {
         "branch": "nixpkgs-unstable",
         "description": "Nix Packages collection",
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "53dad94e874c9586e71decf82d972dfb640ef044",
-        "sha256": "03knsdlm2f4hd46y100vcii07xsa95rdk3b1i2jh8rj3pjm4hlzl",
+        "rev": "e913ae340076bbb73d9f4d3d065c2bca7caafb16",
+        "sha256": "07qjibn85hc6p8c7lwg00fwpyqjlmaxncz9wa2l6qpy1hsk51k8f",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/53dad94e874c9586e71decf82d972dfb640ef044.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/e913ae340076bbb73d9f4d3d065c2bca7caafb16.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
