@@ -4,6 +4,7 @@ let
   mkBundlerAppDevShell = nixpkgs.callPackage (import sources.bundler-app-dev-shell) {};
 in mkBundlerAppDevShell {
   buildInputs = with nixpkgs; [
+    heroku
     ruby_3_3
   ];
 }
