@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.4"
+ruby "3.3.5"
 
 gem "dogstatsd-ruby"
 gem "puma"
@@ -11,6 +11,7 @@ group :development, :test do
 end
 
 group :test do
+  gem "logger"
   gem "rack-test"
   gem "rspec"
 end
