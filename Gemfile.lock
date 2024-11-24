@@ -6,7 +6,7 @@ GEM
     dogstatsd-ruby (5.6.3)
     logger (1.6.1)
     nio4r (2.7.4)
-    puma (6.4.3)
+    puma (6.5.0)
       nio4r (~> 2.0)
     rack (3.1.8)
     rack-test (2.1.0)
