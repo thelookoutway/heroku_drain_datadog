@@ -5,6 +5,6 @@ let
 in mkBundlerAppDevShell {
   buildInputs = with nixpkgs; [
     heroku
-    ruby_3_3
+    ruby_3_4
   ];
 }
