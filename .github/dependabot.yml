@@ -9,5 +9,3 @@ updates:
       timezone: "Australia/Brisbane"
     labels:
       - "dependencies"
-    reviewers:
-      - "thelookoutway/site-reliability"
