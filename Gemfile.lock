@@ -6,7 +6,7 @@ GEM
     dogstatsd-ruby (5.7.1)
     logger (1.7.0)
     nio4r (2.7.4)
-    puma (7.0.4)
+    puma (7.1.0)
       nio4r (~> 2.0)
     rack (3.2.3)
     rack-test (2.2.0)
@@ -47,7 +47,7 @@ CHECKSUMS
   dogstatsd-ruby (5.7.1) sha256=d2e211f9635d6bbe773e152e00fd4cb9f165d26e10356dbef8f917f7a9e5d58c
   logger (1.7.0) sha256=196edec7cc44b66cfb40f9755ce11b392f21f7967696af15d274dde7edff0203
   nio4r (2.7.4) sha256=d95dee68e0bb251b8ff90ac3423a511e3b784124e5db7ff5f4813a220ae73ca9
-  puma (7.0.4) sha256=b4c6ae11d1458052eeaa415176c3bf0000f4232287f413525ab2504446154b7a
+  puma (7.1.0) sha256=e45c10cb124f224d448c98db653a75499794edbecadc440ad616cf50f2fd49dd
   rack (3.2.3) sha256=239a373da6584574f25f042d8ed4ba21e691c9799f1d2b5c8920bbbc23ca3d41
   rack-test (2.2.0) sha256=005a36692c306ac0b4a9350355ee080fd09ddef1148a5f8b2ac636c720f5c463
   roda (3.97.0) sha256=926001ce16190b82627be040baca6d67ce8d1c0f79f1726fa83abd654690005f
