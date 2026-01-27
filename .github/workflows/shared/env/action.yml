@@ -1,0 +1,7 @@
+name: "Source environment"
+runs:
+  using: "composite"
+  steps:
+    - name: "Source .env"
+      shell: bash
+      run: (env -i bash -c 'set -a && source .env && env') >> "$GITHUB_ENV"

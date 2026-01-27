@@ -1,0 +1,32 @@
+name: "Verify"
+
+permissions: {}
+
+on: "push"
+
+concurrency:
+  group: "${{ github.workflow }}@${{ github.ref_name == 'main' && github.run_id || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: "Test"
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: ./.github/workflows/shared/env
+      - uses: ./.github/workflows/shared/nix
+      - uses: ./.github/workflows/shared/bundle
+      - name: "Run tests"
+        shell: bash
+        env:
+          RACK_ENV: "test"
+        run: nix-shell --run "./bin/rspec"

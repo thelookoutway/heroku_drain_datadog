@@ -1,0 +1,22 @@
+name: "Bundle"
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/workflows/shared/bundle/cache_key
+      if: "${{ env.LOOKOUT_CI_BUNDLE_CACHE_KEY == '' }}"
+
+    - name: "Set BUNDLE_PATH"
+      shell: bash
+      run: echo "BUNDLE_PATH=$LOOKOUT_CI_BUNDLE_CACHE_PATH" >> $GITHUB_ENV
+
+    - uses: actions/cache@v4
+      id: bundle-cache
+      with:
+        path: ${{ env.LOOKOUT_CI_BUNDLE_CACHE_PATH }}
+        key: ${{ env.LOOKOUT_CI_BUNDLE_CACHE_KEY }}
+        restore-keys: ${{ env.LOOKOUT_CI_BUNDLE_CACHE_KEY_PREFIX }}
+
+    - name: "Install bundle"
+      if: ${{ steps.bundle-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: nix-shell --run "bundle install && bundle clean"
