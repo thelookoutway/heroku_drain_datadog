@@ -3,12 +3,3 @@
   command: "nix-shell --run ./script/ci"
   agents:
     nix: true
-
-- wait
-
-- name: ":heroku: Deploy"
-  command: "nix-shell --run './script/deploy $BUILDKITE_COMMIT'"
-  branches: "main"
-  agents:
-    heroku: true
-    nix: true
