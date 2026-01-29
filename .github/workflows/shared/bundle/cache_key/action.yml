@@ -1,0 +1,22 @@
+name: "Bundle cache key"
+runs:
+  using: "composite"
+  steps:
+    - name: "Set LOOKOUT_CI_BUNDLE_CACHE_PATH"
+      shell: bash
+      run: |
+        echo "LOOKOUT_CI_BUNDLE_CACHE_PATH=~/.bundle" >> "$GITHUB_ENV"
+
+    - name: "Set LOOKOUT_CI_BUNDLE_CACHE_KEY_PREFIX"
+      shell: bash
+      run: |
+        {
+          echo "LOOKOUT_CI_BUNDLE_CACHE_KEY_PREFIX=${{ runner.os }}-bundle-${LOOKOUT_CI_NIX_CACHE_HASH}"
+        } >> "$GITHUB_ENV"
+
+    - name: "Set LOOKOUT_CI_BUNDLE_CACHE_KEY"
+      shell: bash
+      run: |
+        {
+          echo "LOOKOUT_CI_BUNDLE_CACHE_KEY=${LOOKOUT_CI_BUNDLE_CACHE_KEY_PREFIX}-${{ hashFiles('Gemfile.lock') }}"
+        } >> "$GITHUB_ENV"

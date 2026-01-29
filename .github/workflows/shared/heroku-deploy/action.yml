@@ -1,0 +1,37 @@
+name: "Heroku Deploy"
+inputs:
+  app:
+    description: "Name of the Heroku App to deploy"
+    required: true
+  revision:
+    description: "Commit SHA for app versioning"
+    required: true
+  heroku_api_key:
+    description: "Heroku API key"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: "Load nix environment"
+      uses: ./.github/workflows/shared/nix
+
+    - name: "Create .netrc with Heroku credentials"
+      env:
+        HEROKU_API_KEY: ${{ inputs.heroku_api_key }}
+      shell: bash
+      run: |
+        cat << EOF > ~/.netrc
+        machine api.heroku.com
+          login service.ci@thelookoutway.com
+          password ${HEROKU_API_KEY}
+        machine git.heroku.com
+          login service.ci@thelookoutway.com
+          password ${HEROKU_API_KEY}
+        EOF
+
+    - name: "Run deploy script"
+      env:
+        HEROKU_APP_NAME: ${{ inputs.app }}
+        REVISION: ${{ inputs.revision }}
+      shell: bash
+      run: nix-shell --run './script/deploy "${REVISION}"'

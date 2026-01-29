@@ -1,0 +1,17 @@
+name: "Nix cache key"
+runs:
+  using: "composite"
+  steps:
+    - name: "Set LOOKOUT_CI_NIX_CACHE_HASH"
+      shell: bash
+      run: |
+        {
+          echo "LOOKOUT_CI_NIX_CACHE_HASH=${{ hashFiles('*.nix', 'nix/*') }}"
+        } >> "$GITHUB_ENV"
+
+    - name: "Set LOOKOUT_CI_NIX_CACHE_KEY"
+      shell: bash
+      run: |
+        {
+          echo "LOOKOUT_CI_NIX_CACHE_KEY=${{ runner.os }}-nix-${LOOKOUT_CI_NIX_CACHE_HASH}"
+        } >> "$GITHUB_ENV"
