@@ -1,5 +1,0 @@
----
-- name: ":rspec: CI"
-  command: "nix-shell --run ./script/ci"
-  agents:
-    nix: true
