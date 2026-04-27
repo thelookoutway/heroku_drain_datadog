@@ -1,13 +1,23 @@
 ---
+# Tier 2 Dependabot policy — Maintenance Mode
+# @see https://www.notion.so/fivegoodfriends/Dependency-Management-Policy-31ed6acb63738052823eda46f51c0a54
 version: 2
 updates:
   - package-ecosystem: "bundler"
     directory: "/"
     schedule:
-      interval: "daily"
-      time: "05:00"
-      timezone: "Australia/Brisbane"
+      interval: "monthly"
     cooldown:
-      default-days: 28
+      default-days: 7
     labels:
       - "dependencies"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Tier 2: ignore major version bumps — framework majors (roda) are
+      # handled as scheduled projects per the Dependency Management Policy.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
