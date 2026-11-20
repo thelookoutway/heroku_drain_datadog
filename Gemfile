@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.4.2"
+ruby "4.0.10"
 
 gem "dogstatsd-ruby"
 gem "puma"
